@@ -31,11 +31,13 @@ app.get("/", (req, res) => {
       // Post endpoints
       createPost: "POST /api/posts/create",
       getAllPosts: "GET /api/posts",
+      deletePost: "DELETE /api/posts/delete",
 
       // Comment endpoints
       createComment: "POST /api/comments/create",
       getComments: "GET /api/comments/post/:postId",
       voteOnComment: "POST /api/comments/vote",
+      deleteComment: "DELETE /api/comments/delete",
 
       // Vote endpoints ← ADD THESE
       flagPerson: "POST /api/votes/post",

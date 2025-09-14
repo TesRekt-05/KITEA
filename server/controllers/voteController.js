@@ -1,7 +1,7 @@
 import Post from "../models/postModel.js";
 import User from "../models/userModel.js";
 
-// Vote on a post (Red Flag / Green Flag only)
+// controllers/voteController.js - UPDATED with flag change support
 export const voteOnPost = async (req, res) => {
   try {
     const { postId, voteType, userId } = req.body;
@@ -41,11 +41,58 @@ export const voteOnPost = async (req, res) => {
       });
     }
 
-    // Update flag count based on type
-    if (voteType === "redFlag") {
-      post.votes.redFlags += 1;
-    } else if (voteType === "greenFlag") {
-      post.votes.greenFlags += 1;
+    // ALLOWS FLAG CHANGES
+    if (!post.votedBy) {
+      post.votedBy = [];
+    }
+    if (!post.flagTypes) {
+      post.flagTypes = new Map();
+    }
+
+    const hasVoted = post.votedBy.includes(userId);
+    const previousFlag = post.flagTypes.get(userId);
+
+    if (hasVoted && previousFlag === voteType) {
+      // Same flag type - block duplicate
+      return res.status(400).json({
+        success: false,
+        message: `You have already ${
+          voteType === "redFlag" ? "red flagged" : "green flagged"
+        } this person`,
+        alreadyVoted: true,
+      });
+    }
+
+    if (hasVoted && previousFlag !== voteType) {
+      // Different flag type - CHANGE FLAG
+      console.log(`User changing flag from ${previousFlag} to ${voteType}`);
+
+      // Remove previous flag
+      if (previousFlag === "redFlag") {
+        post.votes.redFlags -= 1;
+      } else {
+        post.votes.greenFlags -= 1;
+      }
+
+      // Add new flag
+      if (voteType === "redFlag") {
+        post.votes.redFlags += 1;
+      } else {
+        post.votes.greenFlags += 1;
+      }
+
+      // Update flag type
+      post.flagTypes.set(userId, voteType);
+    } else {
+      // First time voting
+      post.votedBy.push(userId);
+      post.flagTypes.set(userId, voteType);
+
+      if (voteType === "redFlag") {
+        post.votes.redFlags += 1;
+      } else {
+        post.votes.greenFlags += 1;
+      }
     }
 
     // Update total votes
@@ -53,9 +100,13 @@ export const voteOnPost = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: `${
-        voteType === "redFlag" ? "Red flag" : "Green flag"
-      } added successfully!`,
+      message: hasVoted
+        ? `Flag changed to ${
+            voteType === "redFlag" ? "red flag" : "green flag"
+          } successfully!`
+        : `${
+            voteType === "redFlag" ? "Red flag" : "Green flag"
+          } added successfully!`,
       data: {
         postId: post._id,
         personName: post.personName,
@@ -65,7 +116,8 @@ export const voteOnPost = async (req, res) => {
           totalVotes: post.votes.totalVotes,
         },
         flagAdded: voteType,
-        safetyScore: post.votes.greenFlags - post.votes.redFlags, // Positive = safe, Negative = warning
+        flagChanged: hasVoted,
+        safetyScore: post.votes.greenFlags - post.votes.redFlags,
       },
     });
   } catch (error) {

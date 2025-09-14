@@ -1,5 +1,6 @@
 import Post from "../models/postModel.js";
 import User from "../models/userModel.js";
+import Comment from "../models/commentModel.js";
 import cloudinary from "../cloudinary.js";
 import fs from "fs";
 
@@ -112,6 +113,70 @@ export const getAllPosts = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Error fetching posts",
+      error: error.message,
+    });
+  }
+};
+
+export const deletePost = async (req, res) => {
+  try {
+    const { postId, userId } = req.body;
+
+    // Validate required fields
+    if (!postId || !userId) {
+      return res.status(400).json({
+        success: false,
+        message: "postId and userId are required",
+      });
+    }
+
+    // Find the post
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({
+        success: false,
+        message: "Post not found",
+      });
+    }
+
+    // Check if user owns this post
+    if (post.uploadedBy.toString() !== userId) {
+      return res.status(403).json({
+        success: false,
+        message: "You can only delete your own posts",
+      });
+    }
+
+    // Delete image from Cloudinary
+    try {
+      await cloudinary.uploader.destroy(post.photo.public_id);
+      console.log(`Deleted image from Cloudinary: ${post.photo.public_id}`);
+    } catch (cloudinaryError) {
+      console.log(
+        "Could not delete image from Cloudinary:",
+        cloudinaryError.message
+      );
+      // Continue with post deletion even if Cloudinary fails
+    }
+
+    // Soft delete all comments on this post
+    await Comment.updateMany({ post: postId }, { isActive: false });
+
+    // Delete the post completely
+    await Post.findByIdAndDelete(postId);
+
+    res.status(200).json({
+      success: true,
+      message: "Post and associated comments deleted successfully",
+      data: {
+        deletedPostId: postId,
+        personName: post.personName,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error deleting post",
       error: error.message,
     });
   }

@@ -1,6 +1,10 @@
-import express from 'express';
-import upload from '../middlewares/upload.js';
-import { createPost, getAllPosts } from '../controllers/postController.js';
+import express from "express";
+import upload from "../middlewares/upload.js";
+import {
+  createPost,
+  getAllPosts,
+  deletePost,
+} from "../controllers/postController.js";
 
 const router = express.Router();
 
@@ -14,11 +18,14 @@ const router = express.Router();
 // });
 
 // This should match: POST /api/posts/create
-router.post('/create', upload.single('photo'), createPost);
+router.post("/create", upload.single("photo"), createPost);
 
-// This should match: GET /api/posts (this one works!)
-router.get('/', getAllPosts);
+// This should match: GET /api/posts
+router.get("/", getAllPosts);
 
-console.log('Post routes loaded successfully'); // Debug line
+//delete route
+router.delete("/delete", deletePost);
+
+console.log("Post routes loaded successfully"); // Debug line
 
 export default router;

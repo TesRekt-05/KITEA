@@ -3,6 +3,7 @@ import {
   createComment,
   getCommentsByPost,
   voteOnComment,
+  deleteComment,
 } from "../controllers/commentController.js";
 
 const router = express.Router();
@@ -15,6 +16,9 @@ router.get("/post/:postId", getCommentsByPost);
 
 // POST /api/comments/vote - Vote on comment
 router.post("/vote", voteOnComment);
+
+//delete comment route
+router.delete("/delete", deleteComment);
 
 console.log("Comment routes loaded successfully");
 
