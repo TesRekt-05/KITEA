@@ -1,4 +1,6 @@
 // server.js
+import dotenv from "dotenv";
+dotenv.config();
 import express from "express";
 import { connectDB } from "./db.js";
 import authRoutes from "./routes/authRoutes.js";
@@ -48,7 +50,14 @@ app.get("/", (req, res) => {
 });
 
 // Error handling
-app.use("/{*catchAll}", (req, res) => {
+// app.use("/{*catchAll}", (req, res) => {
+//   res.status(404).json({
+//     success: false,
+//     message: `Route ${req.originalUrl} not found`,
+//   });
+// });
+
+app.use((req, res) => {
   res.status(404).json({
     success: false,
     message: `Route ${req.originalUrl} not found`,
