@@ -22,7 +22,7 @@ export const createUser = async (req, res) => {
         _id: savedUser._id,
         userCount: savedUser.userCount,
         username: savedUser.username,
-        // password: password,
+        password: password,
         createdAt: savedUser.createdAt,
       },
     });
