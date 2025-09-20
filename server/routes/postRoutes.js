@@ -4,6 +4,7 @@ import {
   createPost,
   getAllPosts,
   deletePost,
+  getUserPosts,
 } from "../controllers/postController.js";
 
 const router = express.Router();
@@ -22,6 +23,9 @@ router.post("/create", upload.single("photo"), createPost);
 
 // This should match: GET /api/posts
 router.get("/", getAllPosts);
+
+// Get posts by specific user
+router.get('/user/:userId', getUserPosts);
 
 //delete route
 router.delete("/delete", deletePost);

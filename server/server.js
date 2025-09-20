@@ -33,6 +33,7 @@ app.get("/", (req, res) => {
       // Post endpoints
       createPost: "POST /api/posts/create",
       getAllPosts: "GET /api/posts",
+      getUserPosts: 'GET /api/posts/user/:userId',
       deletePost: "DELETE /api/posts/delete",
 
       // Comment endpoints
