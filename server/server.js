@@ -25,28 +25,28 @@ app.use("/api/votes", voteRoutes);
 app.get("/", (req, res) => {
   res.json({
     message: "College Tea sharing App API",
-    endpoints: {
-      // Auth endpoints
-      createUser: "POST /api/auth/create-user",
-      login: "POST /api/auth/login",
+    // endpoints: {
+    //   // Auth endpoints
+    //   createUser: "POST /api/auth/create-user",
+    //   login: "POST /api/auth/login",
 
-      // Post endpoints
-      createPost: "POST /api/posts/create",
-      getAllPosts: "GET /api/posts",
-      getUserPosts: 'GET /api/posts/user/:userId',
-      deletePost: "DELETE /api/posts/delete",
+    //   // Post endpoints
+    //   createPost: "POST /api/posts/create",
+    //   getAllPosts: "GET /api/posts",
+    //   getUserPosts: 'GET /api/posts/user/:userId',
+    //   deletePost: "DELETE /api/posts/delete",
 
-      // Comment endpoints
-      createComment: "POST /api/comments/create",
-      getComments: "GET /api/comments/post/:postId",
-      voteOnComment: "POST /api/comments/vote",
-      deleteComment: "DELETE /api/comments/delete",
+    //   // Comment endpoints
+    //   createComment: "POST /api/comments/create",
+    //   getComments: "GET /api/comments/post/:postId",
+    //   voteOnComment: "POST /api/comments/vote",
+    //   deleteComment: "DELETE /api/comments/delete",
 
-      // Vote endpoints ← ADD THESE
-      flagPerson: "POST /api/votes/post",
-      getPersonFlags: "GET /api/votes/post/:postId",
-      getSafestPeople: "GET /api/votes/safest",
-    },
+    //   // Vote endpoints ← ADD THESE
+    //   flagPerson: "POST /api/votes/post",
+    //   getPersonFlags: "GET /api/votes/post/:postId",
+    //   getSafestPeople: "GET /api/votes/safest",
+    // },
   });
 });
 
